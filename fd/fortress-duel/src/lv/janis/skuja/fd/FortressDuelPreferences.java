@@ -5,6 +5,10 @@ import java.util.Locale;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
+/**
+ * @author Janis Skuja
+ * 
+ */
 public class FortressDuelPreferences {
 	// constants
 	private static final String PREF_MUSIC_ENABLED = "music.enabled";
