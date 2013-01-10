@@ -3,14 +3,15 @@ package lv.janis.skuja.fd;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import lv.janis.skuja.fd.manager.MusicManager;
+import lv.janis.skuja.fd.manager.PreferencesManager;
+import lv.janis.skuja.fd.manager.VibrationManager;
 import lv.janis.skuja.fd.resources.ResourceBundleResourceBuilder;
 import lv.janis.skuja.fd.screen.SplashScreen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /**
@@ -27,53 +28,44 @@ public class FortressDuelGame extends Game {
 	private ResourceBundleResourceBuilder builder;
 	private ResourceBundle language;
 	// preferences
-	private FortressDuelPreferences preferences;
-	// fonts used throughout game
-	private BitmapFont fontArial30;
+	private PreferencesManager preferences;
+	// managers
+	private VibrationManager vibrationManager;
+	private MusicManager musicManager;
 	// log FPS
 	private FPSLogger fpsLog;
-	// commonly used textures
-	private TextureAtlas buttonTextureAtlas;
 	// commonly used skin
 	private Skin skin;
 
-	public FortressDuelGame() {
-		super();
-		preferences = new FortressDuelPreferences();
-		builder = new ResourceBundleResourceBuilder();
-		fpsLog = new FPSLogger();
-	}
-
 	@Override
 	public void create() {
+
+		Gdx.input.setCatchBackKey(true);
+
+		preferences = new PreferencesManager();
+		builder = new ResourceBundleResourceBuilder();
+		fpsLog = new FPSLogger();
+		// initialize managers
+		vibrationManager = new VibrationManager(preferences.isVibrationEnabled());
+		musicManager = new MusicManager(preferences.isMusicEnabled());
 		// set default language from preferences
 		Locale.setDefault(preferences.getLanguage());
 
-		builder.bundle(FortressDuelPreferences.LOCALE_ENGLISH,
-				Gdx.files.internal("resource/languageEn.properties"));
-		builder.bundle(FortressDuelPreferences.LOCALE_LATVIAN,
-				Gdx.files.internal("resource/languageLv.properties"));
-		builder.bundle(FortressDuelPreferences.LOCALE_RUSSIAN,
-				Gdx.files.internal("resource/languageRu.properties"));
+		builder.bundle(PreferencesManager.LOCALE_ENGLISH, Gdx.files.internal("resource/languageEn.properties"));
+		builder.bundle(PreferencesManager.LOCALE_LATVIAN, Gdx.files.internal("resource/languageLv.properties"));
+		builder.bundle(PreferencesManager.LOCALE_RUSSIAN, Gdx.files.internal("resource/languageRu.properties"));
 		builder.root(Gdx.files.internal("resource/languageEn.properties"));
 
 		// build game language (get the right resource .properties file)
 		this.language = builder.build();
 
-		// create fonts
-		fontArial30 = new BitmapFont(Gdx.files.internal("font/arial.fnt"),
-				false);
-		// create textures and skin
-		buttonTextureAtlas = new TextureAtlas("texture/button/button.pack");
-		skin = new Skin();
-		skin.addRegions(buttonTextureAtlas);
+		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 		setScreen(new SplashScreen(this));
 	}
 
 	@Override
 	public void dispose() {
-		fontArial30.dispose();
-		buttonTextureAtlas.dispose();
+		musicManager.dispose();
 		skin.dispose();
 		super.dispose();
 	}
@@ -103,7 +95,7 @@ public class FortressDuelGame extends Game {
 		return builder;
 	}
 
-	public FortressDuelPreferences getPreferences() {
+	public PreferencesManager getPreferences() {
 		return preferences;
 	}
 
@@ -115,20 +107,28 @@ public class FortressDuelGame extends Game {
 		this.language = language;
 	}
 
-	public BitmapFont getFontArial30() {
-		return fontArial30;
-	}
-
-	public void setFontArial30(BitmapFont fontArial30) {
-		this.fontArial30 = fontArial30;
-	}
-
 	public Skin getSkin() {
 		return skin;
 	}
 
 	public void setSkin(Skin skin) {
 		this.skin = skin;
+	}
+
+	public VibrationManager getVibrationManager() {
+		return vibrationManager;
+	}
+
+	public void setVibrationManager(VibrationManager vibrationManager) {
+		this.vibrationManager = vibrationManager;
+	}
+
+	public MusicManager getMusicManager() {
+		return musicManager;
+	}
+
+	public void setMusicManager(MusicManager musicManager) {
+		this.musicManager = musicManager;
 	}
 
 }

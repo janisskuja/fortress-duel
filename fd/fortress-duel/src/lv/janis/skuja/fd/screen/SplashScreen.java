@@ -1,17 +1,16 @@
 package lv.janis.skuja.fd.screen;
 
 import lv.janis.skuja.fd.FortressDuelGame;
+import lv.janis.skuja.fd.manager.MusicManager.FdMusic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
 /**
@@ -48,24 +47,18 @@ public class SplashScreen implements Screen {
 
 		Gdx.input.setInputProcessor(stage);
 
-		LabelStyle labelStyle = new LabelStyle(game.getFontArial30(), Color.RED);
-
-		lblClickScreen = new Label(game.getLanguage().getString(
-				"splash.click.screen"), labelStyle);
+		lblClickScreen = new Label(game.getLanguage().getString("splash.click.screen"), game.getSkin());
 		lblClickScreen.setX(0);
-		lblClickScreen.setY(Gdx.graphics.getHeight() / 2
-				- game.getFontArial30().getXHeight());
+		lblClickScreen.setY(Gdx.graphics.getHeight() / 2 - lblClickScreen.getHeight() / 2);
 		lblClickScreen.setWidth(width);
 		lblClickScreen.setAlignment(Align.center);
 
 		stage.addListener(new InputListener() {
-			public boolean touchDown(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				return true;
 			}
 
-			public void touchUp(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				game.setScreen(new MenuScreen(game));
 			}
 		});
@@ -76,6 +69,7 @@ public class SplashScreen implements Screen {
 
 	@Override
 	public void show() {
+		this.game.getMusicManager().play(FdMusic.MENU);
 		batch = new SpriteBatch();
 	}
 

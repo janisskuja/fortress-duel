@@ -3,21 +3,21 @@ package lv.janis.skuja.fd.screen;
 import java.util.Locale;
 
 import lv.janis.skuja.fd.FortressDuelGame;
-import lv.janis.skuja.fd.FortressDuelPreferences;
+import lv.janis.skuja.fd.manager.MusicManager.FdMusic;
+import lv.janis.skuja.fd.manager.PreferencesManager;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 
 public class OptionsScreen implements Screen {
 
@@ -31,13 +31,6 @@ public class OptionsScreen implements Screen {
 	private TextButton btnLangLv;
 	private TextButton btnLangEn;
 	private TextButton btnLangRu;
-
-	private Label lblSound;
-	private Label lblMusic;
-	private Label lblVibration;
-	private Label lblLanguage;
-
-	private Label lblTitle;
 
 	private Table table;
 
@@ -59,95 +52,171 @@ public class OptionsScreen implements Screen {
 		batch.begin();
 		stage.draw();
 		batch.end();
+
+		// Listen for the back key and navigate to previous screen
+		if (Gdx.input.isKeyPressed(Keys.BACK) || Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+			this.game.setScreen(new MenuScreen(game));
+		}
 	}
 
 	@Override
 	public void resize(int width, int height) {
+		createStage(width, height);
+
+	}
+
+	private void createStage(int width, int height) {
 		if (stage == null)
 			stage = new Stage(width, height, true);
 		stage.clear();
 
 		Gdx.input.setInputProcessor(stage);
 
-		// Labels
-		LabelStyle labelStyle = new LabelStyle(game.getFontArial30(),
-				Color.WHITE);
+		createButtons();
 
-		lblSound = new Label(game.getLanguage().getString("options.sound"),
-				labelStyle);
-		lblMusic = new Label(game.getLanguage().getString("options.music"),
-				labelStyle);
-		lblVibration = new Label(game.getLanguage().getString(
-				"options.vibration"), labelStyle);
-		lblLanguage = new Label(game.getLanguage()
-				.getString("options.language"), labelStyle);
+		createCheckBoxes();
 
-		lblTitle = new Label(game.getLanguage().getString("menu.options"),
-				labelStyle);
+		createTable();
 
-		// Buttons
-		TextButtonStyle btnStyle = new TextButtonStyle();
-		btnStyle.up = game.getSkin().getDrawable("buttonnormal");
-		btnStyle.down = game.getSkin().getDrawable("buttonpressed");
-		btnStyle.font = game.getFontArial30();
-		btnStyle.fontColor = new Color(0, 0, 0, 1);
+		stage.addActor(table);
+	}
 
-		TextButtonStyle btnStyleSelected = new TextButtonStyle();
-		btnStyleSelected.up = game.getSkin().getDrawable("buttonnormal");
-		btnStyleSelected.down = game.getSkin().getDrawable("buttonpressed");
-		btnStyleSelected.font = game.getFontArial30();
-		btnStyleSelected.fontColor = new Color(1, 0, 0, 1);
+	private void createTable() {
 
-		btnLangEn = new TextButton(game.getLanguage().getString(
-				"options.language.en"), (Locale.getDefault().equals(
-				FortressDuelPreferences.LOCALE_ENGLISH) ? btnStyleSelected
-				: btnStyle));
-		btnLangLv = new TextButton(game.getLanguage().getString(
-				"options.language.lv"), (Locale.getDefault().equals(
-				FortressDuelPreferences.LOCALE_LATVIAN) ? btnStyleSelected
-				: btnStyle));
-		btnLangRu = new TextButton(game.getLanguage().getString(
-				"options.language.ru"), (Locale.getDefault().equals(
-				FortressDuelPreferences.LOCALE_RUSSIAN) ? btnStyleSelected
-				: btnStyle));
-
-		// Checkboxes
-		CheckBoxStyle checkBoxStyle = new CheckBoxStyle();
-
-		checkBoxStyle.font = game.getFontArial30();
-		checkBoxStyle.fontColor = new Color(1, 0, 0, 1);
-		checkBoxStyle.up = game.getSkin().getDrawable("buttonpressed");
-		checkBoxStyle.checkboxOn = game.getSkin().getDrawable("buttonnormal");
-
-		cbMusic = new CheckBox(" ", checkBoxStyle);
-		cbMusic.setChecked(game.getPreferences().isMusicEnabled());
-		cbSound = new CheckBox(" ", checkBoxStyle);
-		cbSound.setChecked(game.getPreferences().isSoundEffectsEnabled());
-		cbVibration = new CheckBox(" ", checkBoxStyle);
-		cbVibration.setChecked(game.getPreferences().isVibrationEnabled());
-
-		// create the table layout
-		table = new Table();
-		table.defaults().width(150);
+		table = new Table(game.getSkin());
+		table.defaults().width(150).height(50).pad(10);
 		table.setFillParent(true);
-		table.add(lblTitle).colspan(4).center().height(100);
+		table.add(game.getLanguage().getString("menu.options")).colspan(4).center().height(100);
 		table.row();
-		table.add(lblSound).right();
-		table.add(cbSound).colspan(3).center();
+		table.add(game.getLanguage().getString("options.sound")).right();
+		table.add(cbSound).colspan(3).left();
 		table.row();
-		table.add(lblMusic).right();
-		table.add(cbMusic).colspan(3).center();
+		table.add(game.getLanguage().getString("options.music")).right();
+		table.add(cbMusic).colspan(3).left();
 		table.row();
-		table.add(lblVibration).right();
-		table.add(cbVibration).colspan(3).center();
+		table.add(game.getLanguage().getString("options.vibration")).right();
+		table.add(cbVibration).colspan(3).left();
 		table.row();
-		table.add(lblLanguage).right();
+		table.add(game.getLanguage().getString("options.language")).right();
 		table.add(btnLangEn).center();
 		table.add(btnLangLv).center();
 		table.add(btnLangRu).center();
+		table.row();
+		table.add(btnCredits).colspan(4).center();
+	}
 
-		stage.addActor(table);
+	private void createCheckBoxes() {
+		cbMusic = new CheckBox(" ", game.getSkin());
+		cbMusic.setChecked(game.getPreferences().isMusicEnabled());
+		cbSound = new CheckBox(" ", game.getSkin());
+		cbSound.setChecked(game.getPreferences().isSoundEffectsEnabled());
+		cbVibration = new CheckBox(" ", game.getSkin());
+		cbVibration.setChecked(game.getPreferences().isVibrationEnabled());
 
+		cbMusic.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+				boolean enabled = cbMusic.isChecked();
+				game.getPreferences().setMusicEnabled(enabled);
+				game.getMusicManager().setEnabled(enabled);
+				game.getMusicManager().play(FdMusic.MENU);
+			}
+		});
+		cbSound.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+				game.getPreferences().setSoundEffectsEnabled(cbSound.isChecked());
+			}
+		});
+		cbVibration.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				boolean enabled = cbVibration.isChecked();
+				game.getPreferences().setVibrationEnabled(enabled);
+				game.getVibrationManager().setEnabled(enabled);
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+			}
+		});
+	}
+
+	private void createButtons() {
+
+		btnLangEn = new TextButton(game.getLanguage().getString("options.language.en"), game.getSkin());
+		btnLangLv = new TextButton(game.getLanguage().getString("options.language.lv"), game.getSkin());
+		btnLangRu = new TextButton(game.getLanguage().getString("options.language.ru"), game.getSkin());
+		btnCredits = new TextButton(game.getLanguage().getString("options.credits"), game.getSkin());
+		// add listeners to buttons
+		btnLangEn.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+				if (!PreferencesManager.LOCALE_ENGLISH.equals(game.getPreferences().getLanguage())) {
+					game.getPreferences().setLanguage(PreferencesManager.LOCALE_ENGLISH);
+					Locale.setDefault(game.getPreferences().getLanguage());
+					game.setLanguage(game.getBuilder().build());
+					createStage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+				}
+			}
+		});
+		btnLangLv.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+				if (!PreferencesManager.LOCALE_LATVIAN.equals(game.getPreferences().getLanguage())) {
+					game.getPreferences().setLanguage(PreferencesManager.LOCALE_LATVIAN);
+					Locale.setDefault(game.getPreferences().getLanguage());
+					game.setLanguage(game.getBuilder().build());
+					createStage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+				}
+			}
+		});
+		btnLangRu.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+				if (!PreferencesManager.LOCALE_RUSSIAN.equals(game.getPreferences().getLanguage())) {
+					game.getPreferences().setLanguage(PreferencesManager.LOCALE_RUSSIAN);
+					Locale.setDefault(game.getPreferences().getLanguage());
+					game.setLanguage(game.getBuilder().build());
+					createStage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+				}
+			}
+		});
+		btnCredits.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+				new Dialog(game.getLanguage().getString("options.credits"), game.getSkin()) {
+					protected void result(Object object) {
+						game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+					}
+				}.text(game.getLanguage().getString("options.credits"))
+						.button(game.getLanguage().getString("game.ok"), true).show(stage).setFillParent(true);
+			}
+		});
 	}
 
 	@Override

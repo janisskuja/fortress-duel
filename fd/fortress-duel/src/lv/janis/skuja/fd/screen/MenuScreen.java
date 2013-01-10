@@ -1,18 +1,19 @@
 package lv.janis.skuja.fd.screen;
 
 import lv.janis.skuja.fd.FortressDuelGame;
+import lv.janis.skuja.fd.manager.PreferencesManager;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 
 /**
  * @author Janis Skuja
@@ -20,11 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
  */
 public class MenuScreen implements Screen {
 
-	private static final float BTN_HEIGHT = 50;
-
-	private static final float BTN_WIDTH = 300;
-
-	private static final float RIGHT_PADDING = 50;
+	private boolean dialogShown = false;
 
 	private FortressDuelGame game;
 
@@ -37,7 +34,7 @@ public class MenuScreen implements Screen {
 	private TextButton btnHelp;
 	private TextButton btnHighScores;
 
-	private Label lblTitle;
+	private Table table;
 
 	public MenuScreen(FortressDuelGame game) {
 		this.game = game;
@@ -53,119 +50,122 @@ public class MenuScreen implements Screen {
 		batch.begin();
 		stage.draw();
 		batch.end();
+
+		// Listen for the back key
+		if (Gdx.input.isKeyPressed(Keys.BACK) || Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+			if (!dialogShown) {
+				dialogShown = true;
+				new Dialog(game.getLanguage().getString("game.title.exit"), game.getSkin()) {
+					protected void result(Object object) {
+						game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+						if (object.equals(true)) {
+							Gdx.app.exit();
+						} else {
+							dialogShown = false;
+						}
+					}
+				}.text(game.getLanguage().getString("game.exit"))
+						.button(game.getLanguage().getString("game.yes"), true)
+						.button(game.getLanguage().getString("game.no"), false).show(stage);
+			}
+		}
+
 	}
 
 	@Override
 	public void resize(int width, int height) {
+		createStage(width, height);
+	}
+
+	private void createStage(int width, int height) {
 		if (stage == null)
 			stage = new Stage(width, height, true);
 		stage.clear();
 
 		Gdx.input.setInputProcessor(stage);
 
-		TextButtonStyle btnStyle = new TextButtonStyle();
-		btnStyle.up = game.getSkin().getDrawable("buttonnormal");
-		btnStyle.down = game.getSkin().getDrawable("buttonpressed");
-		btnStyle.font = game.getFontArial30();
-		btnStyle.fontColor = new Color(1, 0, 0, 1);
+		createButtons();
 
-		// create buttons and place them on screen
-		// TODO put all buttons in array and do placement logic in a loop
+		createTable();
+
+		// Add actors (buttons, labels, table etc. to stage)
+		stage.addActor(table);
+	}
+
+	private void createTable() {
+		// Create and add actors to table
+		table = new Table(game.getSkin());
+		table.center();
+		table.defaults().height(50).width(300).pad(10);
+		table.setFillParent(true);
+		table.add(game.getLanguage().getString("game.title"));
+		table.row();
+		table.add(btnStart);
+		table.row();
+		table.add(btnHighScores);
+		table.row();
+		table.add(btnOptions);
+		table.row();
+		table.add(btnHelp);
+	}
+
+	private void createButtons() {
+
+		// Create buttons and place them on screen
 		// Start game button
-		btnStart = new TextButton(game.getLanguage().getString("menu.play"),
-				btnStyle);
-		btnStart.setWidth(BTN_WIDTH);
-		btnStart.setHeight(BTN_HEIGHT);
-		btnStart.setX(Gdx.graphics.getWidth() - BTN_WIDTH - RIGHT_PADDING);
-		btnStart.setY(Gdx.graphics.getHeight() - (BTN_HEIGHT * 2)
-				- (BTN_HEIGHT * 0) - 20 - btnStart.getHeight());
-
+		btnStart = new TextButton(game.getLanguage().getString("menu.play"), game.getSkin());
 		// Options button
-		btnOptions = new TextButton(game.getLanguage()
-				.getString("menu.options"), btnStyle);
-		btnOptions.setWidth(BTN_WIDTH);
-		btnOptions.setHeight(BTN_HEIGHT);
-		btnOptions.setX(Gdx.graphics.getWidth() - BTN_WIDTH - RIGHT_PADDING);
-		btnOptions.setY(Gdx.graphics.getHeight() - (BTN_HEIGHT * 2)
-				- (BTN_HEIGHT * 1) - 20 - btnOptions.getHeight());
-
+		btnOptions = new TextButton(game.getLanguage().getString("menu.options"), game.getSkin());
 		// High-scores button
-		btnHighScores = new TextButton(game.getLanguage().getString(
-				"menu.high.scores"), btnStyle);
-		btnHighScores.setWidth(BTN_WIDTH);
-		btnHighScores.setHeight(BTN_HEIGHT);
-		btnHighScores.setX(Gdx.graphics.getWidth() - BTN_WIDTH - RIGHT_PADDING);
-		btnHighScores.setY(Gdx.graphics.getHeight() - (BTN_HEIGHT * 2)
-				- (BTN_HEIGHT * 2) - 20 - btnOptions.getHeight());
-
+		btnHighScores = new TextButton(game.getLanguage().getString("menu.high.scores"), game.getSkin());
 		// Help button
-		btnHelp = new TextButton(game.getLanguage().getString("menu.help"),
-				btnStyle);
-		btnHelp.setWidth(BTN_WIDTH);
-		btnHelp.setHeight(BTN_HEIGHT);
-		btnHelp.setX(Gdx.graphics.getWidth() - BTN_WIDTH - RIGHT_PADDING);
-		btnHelp.setY(Gdx.graphics.getHeight() - (BTN_HEIGHT * 2)
-				- (BTN_HEIGHT * 3) - 20 - btnHelp.getHeight());
+		btnHelp = new TextButton(game.getLanguage().getString("menu.help"), game.getSkin());
 
 		// add listeners to buttons
-		// TODO: add listeners in loop
 		// Start game button listener
 		btnStart.addListener(new InputListener() {
-			public boolean touchDown(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				return true;
 			}
 
-			public void touchUp(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				game.setScreen(new GameScreen(game));
 			}
 		});
-
 		// Options button listener
 		btnOptions.addListener(new InputListener() {
-			public boolean touchDown(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				return true;
 			}
 
-			public void touchUp(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				game.setScreen(new OptionsScreen(game));
 			}
 		});
-
 		// High-scores button listener
 		btnHighScores.addListener(new InputListener() {
-			public boolean touchDown(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				return true;
 			}
 
-			public void touchUp(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				game.setScreen(new HighScoresSreen(game));
 			}
 		});
-
 		// Help button listener
 		btnHelp.addListener(new InputListener() {
-			public boolean touchDown(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				return true;
 			}
 
-			public void touchUp(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				game.setScreen(new HelpScreen(game));
 			}
 		});
-
-		// add actors (buttons, labels etc. to stage)
-		stage.addActor(btnStart);
-		stage.addActor(btnOptions);
-		stage.addActor(btnHighScores);
-		stage.addActor(btnHelp);
 	}
 
 	@Override
