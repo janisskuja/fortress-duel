@@ -5,6 +5,7 @@ import java.util.Locale;
 import lv.janis.skuja.fd.FortressDuelGame;
 import lv.janis.skuja.fd.manager.MusicManager.FdMusic;
 import lv.janis.skuja.fd.manager.PreferencesManager;
+import lv.janis.skuja.fd.manager.SoundManager.FdSound;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -120,6 +121,7 @@ public class OptionsScreen implements Screen {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+				game.getSoundManager().play(FdSound.CLICK);
 				boolean enabled = cbMusic.isChecked();
 				game.getPreferences().setMusicEnabled(enabled);
 				game.getMusicManager().setEnabled(enabled);
@@ -133,7 +135,10 @@ public class OptionsScreen implements Screen {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
-				game.getPreferences().setSoundEffectsEnabled(cbSound.isChecked());
+				boolean enabled = cbSound.isChecked();
+				game.getPreferences().setSoundEffectsEnabled(enabled);
+				game.getSoundManager().setEnabled(enabled);
+				game.getSoundManager().play(FdSound.CLICK);
 			}
 		});
 		cbVibration.addListener(new InputListener() {
@@ -143,6 +148,7 @@ public class OptionsScreen implements Screen {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				boolean enabled = cbVibration.isChecked();
+				game.getSoundManager().play(FdSound.CLICK);
 				game.getPreferences().setVibrationEnabled(enabled);
 				game.getVibrationManager().setEnabled(enabled);
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
@@ -165,6 +171,7 @@ public class OptionsScreen implements Screen {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				if (!PreferencesManager.LOCALE_ENGLISH.equals(game.getPreferences().getLanguage())) {
+					game.getSoundManager().play(FdSound.CLICK);
 					game.getPreferences().setLanguage(PreferencesManager.LOCALE_ENGLISH);
 					Locale.setDefault(game.getPreferences().getLanguage());
 					game.setLanguage(game.getBuilder().build());
@@ -178,6 +185,7 @@ public class OptionsScreen implements Screen {
 			}
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getSoundManager().play(FdSound.CLICK);
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				if (!PreferencesManager.LOCALE_LATVIAN.equals(game.getPreferences().getLanguage())) {
 					game.getPreferences().setLanguage(PreferencesManager.LOCALE_LATVIAN);
@@ -193,6 +201,7 @@ public class OptionsScreen implements Screen {
 			}
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getSoundManager().play(FdSound.CLICK);
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				if (!PreferencesManager.LOCALE_RUSSIAN.equals(game.getPreferences().getLanguage())) {
 					game.getPreferences().setLanguage(PreferencesManager.LOCALE_RUSSIAN);
@@ -208,10 +217,12 @@ public class OptionsScreen implements Screen {
 			}
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getSoundManager().play(FdSound.CLICK);
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				new Dialog(game.getLanguage().getString("options.credits"), game.getSkin()) {
 					protected void result(Object object) {
 						game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+						game.getSoundManager().play(FdSound.CLICK);
 					}
 				}.text(game.getLanguage().getString("options.credits"))
 						.button(game.getLanguage().getString("game.ok"), true).show(stage).setFillParent(true);

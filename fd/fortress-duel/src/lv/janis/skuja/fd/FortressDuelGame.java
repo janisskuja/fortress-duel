@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import lv.janis.skuja.fd.manager.MusicManager;
 import lv.janis.skuja.fd.manager.PreferencesManager;
+import lv.janis.skuja.fd.manager.SoundManager;
 import lv.janis.skuja.fd.manager.VibrationManager;
 import lv.janis.skuja.fd.resources.ResourceBundleResourceBuilder;
 import lv.janis.skuja.fd.screen.SplashScreen;
@@ -32,6 +33,7 @@ public class FortressDuelGame extends Game {
 	// managers
 	private VibrationManager vibrationManager;
 	private MusicManager musicManager;
+	private SoundManager soundManager;
 	// log FPS
 	private FPSLogger fpsLog;
 	// commonly used skin
@@ -48,6 +50,7 @@ public class FortressDuelGame extends Game {
 		// initialize managers
 		vibrationManager = new VibrationManager(preferences.isVibrationEnabled());
 		musicManager = new MusicManager(preferences.isMusicEnabled());
+		soundManager = new SoundManager(preferences.isSoundEffectsEnabled());
 		// set default language from preferences
 		Locale.setDefault(preferences.getLanguage());
 
@@ -66,6 +69,7 @@ public class FortressDuelGame extends Game {
 	@Override
 	public void dispose() {
 		musicManager.dispose();
+		soundManager.dispose();
 		skin.dispose();
 		super.dispose();
 	}
@@ -129,6 +133,14 @@ public class FortressDuelGame extends Game {
 
 	public void setMusicManager(MusicManager musicManager) {
 		this.musicManager = musicManager;
+	}
+
+	public SoundManager getSoundManager() {
+		return soundManager;
+	}
+
+	public void setSoundManager(SoundManager soundManager) {
+		this.soundManager = soundManager;
 	}
 
 }

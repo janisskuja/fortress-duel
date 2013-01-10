@@ -2,6 +2,8 @@ package lv.janis.skuja.fd.screen;
 
 import lv.janis.skuja.fd.FortressDuelGame;
 import lv.janis.skuja.fd.manager.MusicManager.FdMusic;
+import lv.janis.skuja.fd.manager.PreferencesManager;
+import lv.janis.skuja.fd.manager.SoundManager.FdSound;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -59,6 +61,8 @@ public class SplashScreen implements Screen {
 			}
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getSoundManager().play(FdSound.CLICK);
+				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				game.setScreen(new MenuScreen(game));
 			}
 		});

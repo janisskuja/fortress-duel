@@ -2,6 +2,7 @@ package lv.janis.skuja.fd.screen;
 
 import lv.janis.skuja.fd.FortressDuelGame;
 import lv.janis.skuja.fd.manager.PreferencesManager;
+import lv.janis.skuja.fd.manager.SoundManager.FdSound;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -58,6 +59,7 @@ public class MenuScreen implements Screen {
 				new Dialog(game.getLanguage().getString("game.title.exit"), game.getSkin()) {
 					protected void result(Object object) {
 						game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+						game.getSoundManager().play(FdSound.CLICK);
 						if (object.equals(true)) {
 							Gdx.app.exit();
 						} else {
@@ -130,6 +132,7 @@ public class MenuScreen implements Screen {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
+				game.getSoundManager().play(FdSound.CLICK);
 				game.setScreen(new GameScreen(game));
 			}
 		});
@@ -140,6 +143,7 @@ public class MenuScreen implements Screen {
 			}
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getSoundManager().play(FdSound.CLICK);
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				game.setScreen(new OptionsScreen(game));
 			}
@@ -151,6 +155,7 @@ public class MenuScreen implements Screen {
 			}
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getSoundManager().play(FdSound.CLICK);
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				game.setScreen(new HighScoresSreen(game));
 			}
@@ -162,6 +167,7 @@ public class MenuScreen implements Screen {
 			}
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				game.getSoundManager().play(FdSound.CLICK);
 				game.getVibrationManager().vibrate(PreferencesManager.VIBRATION_TIME);
 				game.setScreen(new HelpScreen(game));
 			}
