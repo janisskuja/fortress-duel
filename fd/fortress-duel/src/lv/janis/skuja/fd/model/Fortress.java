@@ -1,44 +1,81 @@
 package lv.janis.skuja.fd.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 /**
  * @author Janis Skuja
  */
 public class Fortress {
-	private FortressSide fortressSide;
-	private int health;
-	private Drawable drawable;
-	private Image image;
+
+	private FortressType fortressType;
+	private Sprite fortressSprite;
+	private Sprite fortressDead;
+	private FortressState fortressState;
+	private float health;
 	private Rectangle rectangle;
+	private TextureAtlas textureAtlas;
 
-	public Fortress(FortressSide fortressSide, int health, Drawable drawable) {
-		super();
-		this.fortressSide = fortressSide;
+	public Fortress(FortressType fortressType) {
+		this.fortressType = fortressType;
+		this.health = 500;
+		this.textureAtlas = new TextureAtlas("sprites/fortressPack.pack");
+		this.fortressState = FortressState.ALIVE;
+		switch (fortressType) {
+		case LIGHT_FORTRESS:
+			fortressSprite = textureAtlas.createSprite("light_fort");
+			fortressDead = textureAtlas.createSprite("light_fort_dead");
+			fortressSprite.setX(0);
+			fortressDead.setX(0);
+			this.rectangle = new Rectangle(0, 0, 100, 480);
+			break;
+		case DARK_FORTRESS:
+			this.rectangle = new Rectangle(680, 0, 100, 480);
+			fortressSprite = textureAtlas.createSprite("dark_fort");
+			fortressDead = textureAtlas.createSprite("dark_fort_dead");
+			fortressSprite.setX(Gdx.graphics.getWidth() - fortressSprite.getWidth());
+			fortressDead.setX(fortressSprite.getX());
+			break;
+		default:
+			break;
+		}
+
+		fortressSprite.setY(5);
+		fortressDead.setY(5);
+
+	}
+
+	public FortressType getFortressType() {
+		return fortressType;
+	}
+
+	public void setFortressType(FortressType fortressType) {
+		this.fortressType = fortressType;
+	}
+
+	public Sprite getFortressSprite() {
+		if (fortressState == FortressState.ALIVE)
+			return fortressSprite;
+		else
+			return fortressDead;
+	}
+
+	public FortressState getFortressState() {
+		return fortressState;
+	}
+
+	public void setFortressState(FortressState fortressState) {
+		this.fortressState = fortressState;
+	}
+
+	public float getHealth() {
+		return health;
+	}
+
+	public void setHealth(float health) {
 		this.health = health;
-		this.rectangle = new Rectangle((fortressSide == FortressSide.GOOD ? 0 : Gdx.graphics.getWidth()
-				- drawable.getMinWidth()), 70, drawable.getMinWidth(), drawable.getMinHeight());
-		this.image = new Image(drawable);
-		image.setPosition(rectangle.getX(), rectangle.getY());
-	}
-
-	public Drawable getDrawable() {
-		return drawable;
-	}
-
-	public void setDrawable(Drawable drawable) {
-		this.drawable = drawable;
-	}
-
-	public Image getImage() {
-		return image;
-	}
-
-	public void setImage(Image image) {
-		this.image = image;
 	}
 
 	public Rectangle getRectangle() {
@@ -49,20 +86,12 @@ public class Fortress {
 		this.rectangle = rectangle;
 	}
 
-	public FortressSide getFortressSide() {
-		return fortressSide;
+	public TextureAtlas getTextureAtlas() {
+		return textureAtlas;
 	}
 
-	public void setFortressSide(FortressSide fortressSide) {
-		this.fortressSide = fortressSide;
-	}
-
-	public int getHealth() {
-		return health;
-	}
-
-	public void setHealth(int health) {
-		this.health = health;
+	public void setTextureAtlas(TextureAtlas textureAtlas) {
+		this.textureAtlas = textureAtlas;
 	}
 
 }

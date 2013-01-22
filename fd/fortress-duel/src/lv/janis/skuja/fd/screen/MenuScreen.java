@@ -1,6 +1,7 @@
 package lv.janis.skuja.fd.screen;
 
 import lv.janis.skuja.fd.FortressDuelGame;
+import lv.janis.skuja.fd.manager.MusicManager.FdMusic;
 import lv.janis.skuja.fd.manager.PreferencesManager;
 import lv.janis.skuja.fd.manager.SoundManager.FdSound;
 
@@ -176,6 +177,9 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void show() {
+		if (this.game.getMusicManager().getCurrentMusic() != FdMusic.MENU) {
+			this.game.getMusicManager().play(FdMusic.MENU);
+		}
 		batch = new SpriteBatch();
 	}
 

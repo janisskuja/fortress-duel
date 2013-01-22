@@ -20,7 +20,7 @@ public class SoundManager implements CacheEntryRemovedListener<FdSound, Sound>, 
 	 * The available sound files.
 	 */
 	public enum FdSound {
-		CLICK("sound/button.wav");
+		CLICK("sound/button.wav"), KNIGHT_ATTACK("sound/sword.wav");
 
 		private final String fileName;
 

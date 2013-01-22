@@ -1,0 +1,38 @@
+
+fortressPack.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dark_fort
+  rotate: false
+  xy: 1, 483
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1
+dark_fort_dead
+  rotate: false
+  xy: 1, 1
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1
+
+fortressPack2.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+light_fort
+  rotate: false
+  xy: 1, 483
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1
+light_fort_dead
+  rotate: false
+  xy: 1, 1
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1

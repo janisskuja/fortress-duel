@@ -55,6 +55,8 @@ public class MusicManager implements Disposable {
 	 */
 	private boolean enabled = true;
 
+	private FdMusic fdMusic;
+
 	/**
 	 * Creates the music manager.
 	 */
@@ -68,6 +70,7 @@ public class MusicManager implements Disposable {
 	 * If there is already a music being played it is stopped automatically.
 	 */
 	public void play(FdMusic music) {
+		this.fdMusic = music;
 		// check if the music is enabled
 		if (!enabled)
 			return;
@@ -89,6 +92,10 @@ public class MusicManager implements Disposable {
 		// set the music being played
 		musicBeingPlayed = music;
 		musicBeingPlayed.setMusicResource(musicResource);
+	}
+
+	public FdMusic getCurrentMusic() {
+		return fdMusic;
 	}
 
 	/**

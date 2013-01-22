@@ -1,77 +1,111 @@
 package lv.janis.skuja.fd.model;
 
+import lv.janis.skuja.fd.manager.SoundManager.FdSound;
+
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 /**
  * @author Janis Skuja
  */
 public class Minion {
-	private MinionType type;
-	private float lastAttackTime;
-	private int health;
+	private MinionType minionType;
+	private AnimatedSprite walkingSprite;
+	private AnimatedSprite attackingSprite;
+	private AnimatedSprite dieingSprite;
+	private MinionState minionState;
+	private TextureAtlas textureAtlas;
+	private float x;
+	private float y;
 	private Rectangle rectangle;
-	private Animation attackAnimation;
-	private Animation walkAnimation;
-	private Drawable drawableDead;
-	private Drawable drawableAlive;
-	private Image image;
-	private boolean dead;
-	private boolean attacking;
+	private float lastAttackTime;
+	private float health;
+	private float attack;
+	private FdSound sound;
 
-	public Minion(MinionType type, float lastAttackTime, Drawable textureAlive, Drawable textureDead) {
-		super();
-		this.type = type;
-		this.drawableAlive = textureAlive;
-		this.drawableDead = textureDead;
-		this.image = new Image(textureAlive);
-		this.health = type.getHealth();
-		image.scale((float) -0.5);
-		if (type.isEnemy()) {
-			image.setPosition(Gdx.graphics.getWidth() - image.getWidth() - 10, MathUtils.random(10, 70));
-		} else {
-			image.setPosition(image.getWidth() + 10, MathUtils.random(10, 90));
+	public Minion(MinionType minionType) {
+		this.minionType = minionType;
+		this.y = MathUtils.random(5, 60);
+		this.minionState = MinionState.WALKING;
+
+		switch (minionType) {
+		case DARK_KNIGHT:
+
+			this.sound = FdSound.KNIGHT_ATTACK;
+
+			this.attack = 9.5f;
+
+			this.x = Gdx.graphics.getWidth() - 200;
+
+			this.textureAtlas = new TextureAtlas("sprites/darkpack.pack");
+
+			attackingSprite = new AnimatedSprite(textureAtlas, "dk_attack");
+
+			dieingSprite = new AnimatedSprite(textureAtlas, "dk_dieing");
+
+			walkingSprite = new AnimatedSprite(textureAtlas, "dk_walking");
+
+			break;
+		case LIGHT_KNIGHT:
+
+			this.sound = FdSound.KNIGHT_ATTACK;
+
+			this.attack = 10;
+
+			this.x = 100;
+
+			this.textureAtlas = new TextureAtlas("sprites/lightpack.pack");
+
+			attackingSprite = new AnimatedSprite(textureAtlas, "k_attack");
+
+			dieingSprite = new AnimatedSprite(textureAtlas, "k_dieing");
+
+			walkingSprite = new AnimatedSprite(textureAtlas, "k_walk");
+
+			break;
+		default:
+			break;
 		}
-		rectangle = new Rectangle(image.getX(), image.getY(), image.getWidth() / 2, image.getHeight() / 2);
-		this.lastAttackTime = lastAttackTime;
+
+		this.health = 100;
+
+		walkingSprite.setX(this.x);
+		walkingSprite.setY(this.y);
+		walkingSprite.setAnimationRate(8);
+		walkingSprite.loop(true);
+		walkingSprite.play();
+
+		dieingSprite.setY(this.y);
+		dieingSprite.setX(this.x);
+		dieingSprite.setAnimationRate(6);
+		dieingSprite.loop(false);
+		dieingSprite.play();
+
+		attackingSprite.setY(this.y);
+		attackingSprite.setX(this.x);
+		attackingSprite.setAnimationRate(8);
+		attackingSprite.loop(true);
+		attackingSprite.play();
+
+		this.rectangle = new Rectangle(this.x, this.y, 50, 50);
 	}
 
-	public int getHealth() {
+	public FdSound getSound() {
+		return sound;
+	}
+
+	public float getHealth() {
 		return health;
 	}
 
-	public void setHealth(int health) {
+	public void setHealth(float health) {
 		this.health = health;
 	}
 
-	public boolean isDead() {
-		return dead;
-	}
-
-	public void setDead(boolean dead) {
-		if (dead)
-			this.image = new Image(drawableDead);
-		this.dead = dead;
-	}
-
-	public boolean isAttacking() {
-		return attacking;
-	}
-
-	public void setAttacking(boolean attacking) {
-		this.attacking = attacking;
-	}
-
-	public MinionType getType() {
-		return type;
-	}
-
-	public void setType(MinionType type) {
-		this.type = type;
+	public float getAttack() {
+		return attack;
 	}
 
 	public float getLastAttackTime() {
@@ -82,6 +116,78 @@ public class Minion {
 		this.lastAttackTime = lastAttackTime;
 	}
 
+	public TextureAtlas getTextureAtlas() {
+		return textureAtlas;
+	}
+
+	public void setTextureAtlas(TextureAtlas textureAtlas) {
+		this.textureAtlas = textureAtlas;
+	}
+
+	public MinionType getMinionType() {
+		return minionType;
+	}
+
+	public MinionState getMinionState() {
+		return minionState;
+	}
+
+	public void setMinionState(MinionState minionState) {
+		this.minionState = minionState;
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	public Float getY() {
+		return new Float(y);
+	}
+
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	public AnimatedSprite getAnimatedSprite() {
+		switch (minionState) {
+		case ATACKING:
+			return attackingSprite;
+		case WALKING:
+			return walkingSprite;
+		case DIEING:
+			return dieingSprite;
+		default:
+			break;
+		}
+		return null;
+	}
+
+	public void update(float deltaTime) {
+
+		if (minionState != MinionState.ATACKING && minionState != MinionState.DIEING) {
+			switch (minionType) {
+			case DARK_KNIGHT:
+				this.x -= deltaTime * 20;
+				break;
+			case LIGHT_KNIGHT:
+				this.x += deltaTime * 20;
+				break;
+			default:
+				break;
+			}
+		}
+
+		getAnimatedSprite().setX(this.x);
+
+		this.rectangle.setX(this.x);
+
+		getAnimatedSprite().update(deltaTime);
+	}
+
 	public Rectangle getRectangle() {
 		return rectangle;
 	}
@@ -89,45 +195,4 @@ public class Minion {
 	public void setRectangle(Rectangle rectangle) {
 		this.rectangle = rectangle;
 	}
-
-	public Animation getAttackAnimation() {
-		return attackAnimation;
-	}
-
-	public void setAttackAnimation(Animation attackAnimation) {
-		this.attackAnimation = attackAnimation;
-	}
-
-	public Animation getWalkAnimation() {
-		return walkAnimation;
-	}
-
-	public void setWalkAnimation(Animation walkAnimation) {
-		this.walkAnimation = walkAnimation;
-	}
-
-	public Drawable getDrawableDead() {
-		return drawableDead;
-	}
-
-	public void setDrawableDead(Drawable drawableDead) {
-		this.drawableDead = drawableDead;
-	}
-
-	public Drawable getDrawableAlive() {
-		return drawableAlive;
-	}
-
-	public void setDrawableAlive(Drawable drawableAlive) {
-		this.drawableAlive = drawableAlive;
-	}
-
-	public Image getImage() {
-		return image;
-	}
-
-	public void setImage(Image image) {
-		this.image = image;
-	}
-
 }

@@ -8,6 +8,7 @@ import lv.janis.skuja.fd.manager.PreferencesManager;
 import lv.janis.skuja.fd.manager.SoundManager;
 import lv.janis.skuja.fd.manager.VibrationManager;
 import lv.janis.skuja.fd.resources.ResourceBundleResourceBuilder;
+import lv.janis.skuja.fd.screen.GameScreen;
 import lv.janis.skuja.fd.screen.SplashScreen;
 
 import com.badlogic.gdx.Game;
